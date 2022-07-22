@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe</title>
+    <link rel="stylesheet" href="./stylesheets/recipe.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <div id="hamburger-menu">
+            <i id="leave" class="fa-solid fa-angle-left" onclick="location.href='index.html'"></i>
+            <i id='createRecipe' class="fa-solid fa-notes-medical" onclick="location.href='create.html'"></i>
+            <i id="user" class="fa-solid fa-user" onclick="location.href='login.html'"></i>
+        </div>
+    </header>
+
+    <div id="recipeDetail">
+        <div id="title">
+            <!-- <h1>
+                Strawberry Cake &nbsp;<i class="fa-solid fa-pen-to-square" id="edit" onclick="location.href='edit.html'"></i>
+            </h1> -->
+        </div>
+        <div class="recipeImg" id="recipeImg">
+            <!-- <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1065&q=80" alt=""> -->
+        </div>
+        <div id="tag">
+            <!-- <h2>Tag</h2>
+            <button class="tag">Western</button>
+            <hr> -->
+        </div>
+        <div id="link">
+            <!-- <h2>Link</h2>
+            <a href="https://youtu.be/fmD5GnrtOjc">
+                <p>
+                    https://youtu.be/fmD5GnrtOjc
+                </p>
+            </a>
+            <hr> -->
+        </div>
+        <div id="direction">
+            <!-- <h2>Direction</h2>
+            <p>dictum eu orci facilisis hendrerit. Aliquam erat volutpat. Donec gravida sit amet tellus sed posuere. Duis fermentum dolor id nunc ultricies, sed tincidunt arcu facilisis. Donec tincidunt tempor ornare. Donec non ultrices turpis. </p>
+            <hr> -->
+        </div>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script>
+        // send get request 
+        function get(url) {
+            return $.get(url)
+        }
+
+        // get url params
+        function getUrlParams() {
+            let paramStr = location.href.split('?')[1] || ''
+            paramStr = paramStr.split('#')[0]
+            const result = {}
+            paramStr.split('&').forEach(itemStr => {
+                const arr = itemStr.split('=')
+                const key = arr[0]
+                const val = arr[1]
+                result[key] = val
+            })
+            return result
+        }
+
+        // get DOM elements 
+        const $title = $('#title')
+        const $recipeImg = $('#recipeImg')
+        const $tag = $('#tag')
+        const $link = $('#link')
+        const $direction = $('#direction')
+
+        // obtain data
+        const urlParams = getUrlParams()
+        const url = '/api/cottesmore-menu/detail?id=' + urlParams.id
+        get(url).then(res => {
+            if (res.errno !== 0) {
+                alert('数据错误')
+                return
+            }
+
+            // 显示数据
+            const data = res.data || {}
+
+            $title.append($(`
+                <h1 style="display:inline">
+                ${data.recipe_name} &nbsp;<i class="fa-solid fa-pen-to-square" id="edit" onclick="location.href='edit.html?id=${data.id}'"></i>
+                </h1>
+                <br>
+                <div id="divider"></div>
+                <br>
+            `))
+            $recipeImg.append($(`
+                <img src="/images/${data.img_name}" alt="${data.img_name}">
+            `))
+            $tag.append($(`
+                <h2>Tag</h2>
+                <button class="tag tagClicked">${data.tag}</button>
+                <hr>
+            `))
+            $link.append($(`
+                <h2>Link</h2>
+                <a href="${data.link}">
+                    <p>
+                        ${data.link}
+                    </p>
+                </a>
+                <hr>
+            `))
+            if(data.direction){
+                $direction.append($(`
+                    <h2>Direction</h2>
+                    <p>${data.direction}</p>
+                    <hr>
+                `))
+            }
+        })
+    </script>    
+</body>
+</html>

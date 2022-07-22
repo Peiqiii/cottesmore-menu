@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecipeCreate</title>
+    <link rel="stylesheet" href="./stylesheets/recipe.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <div id="hamburger-menu">
+            <i id="leave" class="fa-solid fa-angle-left" onclick="location.href='index.html'"></i>
+            <i id='createRecipe' class="fa-solid fa-notes-medical" onclick="location.href='create.html'"></i>
+            <i id="user" class="fa-solid fa-user" onclick="location.href='login.html'"></i>
+        </div>
+    </header>
+
+    <div id="recipeDetail">
+        <form enctype="multipart/form-data" method="post" id="recipeInfo" name="fileinfo">
+            <div id="title">
+                <h1 style="display: inline;">
+                    Title 
+                </h1>
+                <input type="text" id="titleInput" placeholder="recipe name" name="recipe_name">
+                <br>
+                <div id="divider"></div>
+            </div>
+            <br>
+            <div class="recipeImg">
+                <input id='imgInput' type="file" accept="image/png, image/gif, image/jpeg" onchange="changePic(this)" name="file">  
+                <div class="recipeImgUpload">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Please upload an image</p>
+                </div>
+                <div class="recipeImgPrvw">
+                    <img id='show' src="" alt="">    
+                </div>
+            </div>
+            <div id="tag">
+                <h2>Tag</h2>
+                <button class="tag" type="button">Chinese +</button>
+                <button class="tag" type="button">Western +</button>
+                <hr>
+            </div>
+            <div id="link">
+                <h2>Link</h2>
+                <textarea name="link" id="linkInput" cols="50" rows="1"></textarea>
+                <hr>
+            </div>
+            <div id="direction">
+                <h2>Direction</h2>
+                <textarea name="direction" id="dirInput" cols="50" rows="10"></textarea>
+                <hr>
+            </div>
+            <!-- <input type="submit" id="submit"> -->
+            <button class="submit" id="submit" type="button">submit</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script>
+        // define click status 
+        let clicked = [0,0]
+        // get tag value 
+        let tagValue = 'chinese'
+       
+        // append btn click event
+        const btns = document.getElementsByClassName('tag')
+        for(let i = 0; i < btns.length; i++){
+            btns[i].onclick = function(){
+                // add tag
+                if(!clicked[i]){
+                    const j = (i == 0 ? 1 : 0)
+                    if(clicked[j]){
+                        btns[j].classList.remove('tagClicked') 
+                        btns[j].innerHTML = btns[j].innerHTML.replace('-', '+')
+                        clicked[j] = 0
+                    }
+                    this.classList.add('tagClicked')
+                    // this.style.color = '#f1f1f1'
+                    // this.style.backgroundColor = '#C35218'   
+                    this.innerHTML = this.innerHTML.replace('+', '-')
+                    clicked[i] = 1
+                    
+                    // change tag value to selected
+                    tagValue = (i == 0 ? 'chinese' : 'western')
+                }else{
+                    this.classList.remove('tagClicked') 
+                    this.innerHTML = this.innerHTML.replace('-', '+')
+                    clicked[i] = 0
+
+                    // change tag value to default 
+                    tagValue = 'chinese'
+                }
+            }
+        }
+        
+        // get DOM 
+        const $titleInput = $('#titleInput')
+        const $imgInput = $('#imgInput')
+        const $btnCreate = $('#submit')
+
+        // submit data
+        // var form = document.forms.namedItem("fileinfo")
+        // form.addEventListener('submit', function(event){
+        //     event.preventDefault()
+        // })
+
+        // send post request 
+        function post(postUrl, formData = {}){
+            return $.ajax({
+                type: 'post',
+                url: postUrl,
+                data: formData,
+                processData: false,
+                contentType: false
+            })
+        }
+
+
+        $btnCreate.click(() => {
+            ///alert('clicked')
+            const title = $titleInput.val()
+            const img = $imgInput.val()
+            if(title === ''){
+                alert('Title is required')
+                return
+            }
+            if(img === ''){
+                alert('Image is required')
+                return
+            }
+
+            // get fomr-data
+            const fd = new FormData(document.getElementById('recipeInfo'))
+            fd.append('tag', tagValue)
+
+            console.log(fd.get('recipe_name'))
+            
+            const postUrl = '/api/cottesmore-menu/new'
+            post(postUrl, fd).then(res => {
+                if(res.errno !== 0) {
+                    alert('Please Log in')
+                    return
+                }
+                const id = res.data.id
+                alert('Successed!')
+            })
+        })
+    </script>
+    <script src="./javascripts/imgPrcss.js"></script>
+</body>
+</html>
