@@ -1,6 +1,6 @@
 const crypto = require('crypto')
 
-const SECRET_KEY = 'fwic39#cv_94'
+const SECRET_KEY = ''
 
 function md5(content){
     let md5 = crypto.createHash('md5')
@@ -12,7 +12,6 @@ function genPassword(password){
     return md5(password)
 }
 
-console.log(genPassword('JKLee&&36'))
 
 module.exports = {
     genPassword

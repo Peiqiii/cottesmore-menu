@@ -46,7 +46,7 @@ app.use(async (ctx, next) => {
 })
 
 // sesssion
-app.keys = ['fwic39#cv_94']
+app.keys = ['']
 app.use(session({
   // cookie
   cookie: {
