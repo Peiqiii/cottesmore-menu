@@ -64,6 +64,17 @@ router.post('/new', loginCheck, async (ctx, next) => {
 // })
 
 router.post('/update', loginCheck, async (ctx, next) => {
+    // update the image
+    if(ctx.request.files.file){
+        const filePath = ctx.request.files.file.filepath
+        const fileName = ctx.request.files.file.originalFilename
+        const dest = path.resolve(__dirname, '../../web/images', fileName)
+        await fse.move(filePath, dest, {overwrite: true})
+
+        // append image name to request body 
+        ctx.request.body.img_name = fileName
+    }
+
     const val = await updateRecipe(ctx.query.id, ctx.request.body)
     if(val){
         ctx.body = new SuccessModel('update success')
