@@ -80,8 +80,14 @@ const newRecipeImg = async (fileName) => {
 
 // update a recipe
 const updateRecipe = async (id, recipeData = {}) => {
-    const {recipe_name, direction} = recipeData
-    let sql = `update recipes set recipe_name = '${recipe_name}', direction = '${direction}' where id = '${id}'`
+    const {recipe_name, img_name, tag, link, direction} = recipeData
+    let sql = `
+        update recipes set recipe_name = '${xss(recipe_name)}', 
+                        img_name = '${xss(img_name)}',
+                        tag = '${xss(tag)}',
+                        link = '${xss(link)}',
+                        direction = '${xss(direction)}'
+                        where id = '${id}'`
     const updateData = await exec(sql)
     if(updateData.affectedRows > 0){
         return true
